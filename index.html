@@ -13,7 +13,11 @@ layout: default
       <a class="blog-logo" href="{{site.url}}" style="background-image: url('{{ site.logo }}')">{{ site.title }}</a>
     {% endif %}
     <h1 class="blog-title">{{ site.title }}</h1>
-    <h2 class="blog-description">{{ site.description }}</h2>
+    <h2 class="blog-quote">
+      "{{ site.quote }}"
+      <span class="blog-quote-by"> <a href="{{ site.quote_reference }}">({{ site.quote_by }})</a></span>
+    </h2>
+    <!--h2 class="blog-description">{{ site.description }}</h2-->
     <div class="custom-links">
       {% for social in site.social %}
         {% if social.url %}
@@ -31,46 +35,48 @@ layout: default
 <main class="content" role="main">
 
     {% if site.tags.featured %}
-    <h5 class="index-headline featured"><span>Featured</span></h5>
+      <h5 class="index-headline featured"><span>Featured</span></h5>
 
-    <div class="container featured">
-      {% for post in site.tags.featured %}
-        <article class="post" itemscope itemtype="http://schema.org/BlogPosting" role="article">
-          <div class="article-item">
-            <header class="post-header">
-              <h2 class="post-title" itemprop="name"><a href="{{ post.url }}" itemprop="url">{{ post.title }}</a></h2>
-            </header>
-            <section class="post-excerpt" itemprop="description">
-              <p>{{ post.content | strip_html | truncatewords: 50 }}</p>
-            </section>
-            <div class="post-meta">
-              <time datetime="{{ post.date | date_to_long_string }}">{{ post.date | date_to_long_string }}</time>
-  <!--            <span class="post-tags-set">on {{#foreach tags}}<span class="post-tag-{{slug}}">{{#if @first}}{{else}}, {{/if}}<a href="/tag/{{slug}}">{{name}}</a></span>{{/foreach}}</span>-->
+      <div class="container featured">
+        {% for post in site.tags.featured %}
+          <article class="post" itemscope itemtype="http://schema.org/BlogPosting" role="article">
+            <div class="article-item">
+              <header class="post-header">
+                <h2 class="post-title" itemprop="name"><a href="{{ post.url }}" itemprop="url">{{ post.title }}</a></h2>
+              </header>
+              <section class="post-excerpt" itemprop="description">
+                <p>{{ post.content | strip_html | truncatewords: 50 }}</p>
+              </section>
+              <div class="post-meta">
+                <time datetime="{{ post.date | date_to_long_string }}">{{ post.date | date_to_long_string }}</time>
+              </div>
             </div>
-          </div>
-        </article>
-      {% endfor %}
-    </div>
+          </article>
+        {% endfor %}
+      </div>
 
-    <h5 class="index-headline normal"><span>Regular</span></h5>
+      <h5 class="index-headline normal"><span>Regular</span></h5>
+    {% else %}
+      <h5 class="index-headline normal"><span></span></h5>
     {% endif %}
-
+    
     <div class="cf frame">
       {% for post in paginator.posts %}
-        <article class="post" itemscope itemtype="http://schema.org/BlogPosting" role="article">
-          <div class="article-item">
-            <header class="post-header">
-              <h2 class="post-title" itemprop="name"><a href="{{ post.url }}" itemprop="url">{{ post.title }}</a></h2>
-            </header>
-            <section class="post-excerpt" itemprop="description">
-              <p>{{ post.content | strip_html | truncatewords: 50 }}</p>
-            </section>
-            <div class="post-meta">
-              <time datetime="{{ post.date | date_to_long_string }}">{{ post.date | date_to_long_string }}</time>
-<!--            <span class="post-tags-set">on {{#foreach tags}}<span class="post-tag-{{slug}}">{{#if @first}}{{else}}, {{/if}}<a href="/tag/{{slug}}">{{name}}</a></span>{{/foreach}}</span>-->
+        {% unless post.tags contains "featured" %}
+          <article class="post" itemscope itemtype="http://schema.org/BlogPosting" role="article">
+            <div class="article-item">
+              <header class="post-header">
+                <h2 class="post-title" itemprop="name"><a href="{{ post.url }}" itemprop="url">{{ post.title }}</a></h2>
+              </header>
+              <section class="post-excerpt" itemprop="description">
+                <p>{{ post.content | strip_html | truncatewords: 50 }}</p>
+              </section>
+              <div class="post-meta">
+                <time datetime="{{ post.date | date_to_long_string }}">{{ post.date | date_to_long_string }}</time>
+              </div>
             </div>
-          </div>
-        </article>
+          </article>
+        {% endunless %}
       {% endfor %}
     </div>
 

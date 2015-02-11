@@ -76,7 +76,7 @@ body
 
 .blog-header
   width: 100%
-  max-width: 640px
+  max-width: 60%
   margin: 0 auto
   position: relative
   padding: 0
@@ -118,10 +118,32 @@ body
     color: #666
     text-align: center
     font-weight: 400
+  .blog-quote
+    margin: 20px 0 20px
+    padding: 0 $rs*2
+    font-size: $rs/8*9
+    line-height: 1.5
+    color: #666
+    text-align: center
+    font-weight: 400
+  .blog-quote-by
+    padding-left: 20px
+    font-size: $rs/8*9
+    line-height: 1.5
+    color: #666
+    text-align: center
+    font-weight: 400
+    a
+      text-decoration: none
+      color: #999
+      &:hover
+        color: #333
+
   .custom-links
-    margin: 0 0 50px
+    margin: 20px 0 30px
     text-align: center
     color: #ccc
+    font-size: 1.25em
     a
       text-decoration: none
       color: #999
@@ -234,6 +256,7 @@ body
 .post
   .article-image
     position: absolute
+    height: 450px
     background-color: #000
     top: 0
     left: 0
@@ -242,6 +265,7 @@ body
     overflow: hidden
     .post-image-image
       background-size: cover
+      background-position: center
       position: absolute
       top: 0
       left: 0
@@ -252,7 +276,9 @@ body
       z-index: 1
     .post-meta
       position: absolute
-      bottom: $rs*5
+      bottom: 0 
+      //$rs*10
+      padding-bottom: 60px
       left: 30%
       right: 30%
       z-index: 9
@@ -265,24 +291,27 @@ body
       font-weight: 700
       font-style: normal
       letter-spacing: -0.04em
-      font-size: 50px
+      font-size: 60px
       line-height: 1.1
       color: #fff
       margin-bottom: 16px
       text-shadow: 0px 1px 16px rgba(0,0,0,0.5), 0px 0px 1px rgba(0,0,0,0.5)
     .author-image
       display: inline-block
-      width: 30px
-      height: 30px
-      line-height: 30px
-      margin-right: 8px
-      margin-bottom: -10px
+      width: 40px
+      height: 40px
+      line-height: 40px
+      margin-right: 12px
+      margin-bottom: 0px
       float: left
       background-size: cover
       border-radius: 100%
       text-indent: -9999px
     .author-name
       display: inline
+      line-height: 40px
+      font-size: 1.5em
+      margin-right: 6px
     .post-meta-text
       color: rgba(255,255,255,0.75)
       letter-spacing: -0.02em
@@ -299,9 +328,9 @@ body
         &:hover
           color: rgba(255,255,255,1)
     .fa-angle-down
-      font-size: 32px
+      font-size: 82px
       margin: 64px auto 0
-      color: rgba(255,255,255,0.75)
+      color: rgba(255,255,255,1)
       &:hover
         color: #fff
     .topofpage
@@ -310,6 +339,7 @@ body
     .post-meta
       font-family: $font-sans
       padding-top: 60px
+      padding-bottom: 60px
     .post-title
       font-weight: 700
       font-style: normal

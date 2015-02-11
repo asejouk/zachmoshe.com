@@ -3,51 +3,58 @@ markdown: redcarpet
 highlighter: pygments
 
 # Site settings
-title: "Mediator"
-description: > # this means to ignore newlines until "email:"
-   A Jekyll theme - Medium inspired
+title: "zachmoshe.com"
+quote: "Computers are useless. They can only give you answers."
+quote_by: "Pablo Picasso, 1960s"
+quote_reference: "http://en.wikiquote.org/wiki/Pablo_Picasso#1960s"
+description: > 
 
-email: a-mail@mail.mail
+email: zachmoshe@gmail.com
 #blog logo
-logo: "/assets/images/df_logo.jpg"
+logo: "/assets/images/zm_logo.jpg"
 # blog cover
-cover: "/assets/images/cA4aKEIPQrerBnp1yGHv_IMG_9534-3-2.jpg"
+cover: "/assets/images/blog_cover.jpg"
 
-name: 'Dirk Fabisch'
-author: 'Dirk Fabisch'
+# name: 'Zach Moshe'
+author: 'Zach Moshe'
 author_image: "/assets/images/author.jpg"
 
 paginate:	5
 
-url: "http://myblog.***.***" # the base hostname & protocol for your site
+url: "http://zachmoshe.com"
 baseurl: ""
 
 # social icons and sharing options
 social:
   - icon:	twitter
-    url:	https://twitter.com/dirkfabisch
+    url:	https://twitter.com/zachmoshe
     desc: Follow me on twitter
     share_url: http://twitter.com/share
     share_title: ?text=
     share_link: "&amp;url="
 
-#  - icon:	facebook
-#    url:	https://facebook.com/???
-#    desc: Connect with me facebook
-#    share_url: //www.facebook.com/sharer.php
-#    share_title: ?t=
-#    share_link: "&amp;u="
+  - icon:	facebook
+    url:	https://facebook.com/zach.moshe
+    desc: Connect with me on facebook
+    share_url: //www.facebook.com/sharer.php
+    share_title: ?t=
+    share_link: "&amp;u="
 
   - icon:	github
-    url:	https://github.com/dirkfabisch
+    url:	https://github.com/zachmoshe
     desc:	Fork me on github
     share_url:
     share_title:
     share_link:
 
-#  - icon:	google-plus
-#    url:	https://google.com/???
-#    desc:	Add me on google+
-#    share_url:
-#    share_title:
-#    share_link:
+  - icon: linkedin
+    url: https://www.linkedin.com/in/zachmoshe
+    desc: Connect with me on linkedin
+    share_url: http://www.linkedin.com/shareArticle?mini=true
+    share_title: "&title="
+    share_link: "&url="
+
+  - icon: stack-overflow
+    url: http://stackoverflow.com/users/1643257/zach-moshe
+    desc: Connect with me on stackoverflow
+
