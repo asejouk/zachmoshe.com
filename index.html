@@ -69,6 +69,7 @@ layout: default
                 <h2 class="post-title" itemprop="name"><a href="{{ post.url }}" itemprop="url">{{ post.title }}</a></h2>
               </header>
               <section class="post-excerpt" itemprop="description">
+                <img class="post-mini-image" src="{{post.mini_image}}" />
                 <p>{{ post.content | strip_html | truncatewords: 50 }}</p>
               </section>
               <div class="post-meta">
