@@ -139,16 +139,16 @@ body
       &:hover
         color: #333
 
-  .custom-links
-    margin: 20px 0 30px
-    text-align: center
-    color: #ccc
-    font-size: 1.25em
-    a
-      text-decoration: none
-      color: #999
-      &:hover
-        color: #333
+.custom-links
+  margin: 20px 0 30px
+  text-align: center
+  color: #ccc
+  font-size: 1.25em
+  a
+    text-decoration: none
+    color: #999
+    &:hover
+      color: #333
 
 .content
   width: 100%
@@ -186,6 +186,8 @@ body
       float: left
       margin-right: 15px
       height: 5em
+      box-shadow: 3px 3px 6px
+
     .post-meta
       font-size: 14px
       color: #b3b3b1
@@ -268,8 +270,9 @@ body
     bottom: 0
     overflow: hidden
     .post-image-image
-      background-size: cover
-      background-position: center
+      // background-size: cover
+      background-position-x: center
+      background-repeat: no-repeat
       position: absolute
       top: 0
       left: 0
@@ -280,9 +283,21 @@ body
       z-index: 1
     .post-meta
       position: absolute
-      bottom: 0 
+      top: 0 
       //$rs*10
-      padding-bottom: 60px
+      padding-top: 60px
+      left: 30%
+      right: 30%
+      z-index: 9
+      font-family: $font-sans
+      @include box-sizing(border-box)
+      @include respond-to(800)
+        left: $rs
+        right: $rs
+    .post-meta-bottom
+      position: absolute
+      bottom: 0
+      margin-bottom: 10px
       left: 30%
       right: 30%
       z-index: 9
@@ -299,7 +314,7 @@ body
       line-height: 1.1
       color: #fff
       margin-bottom: 16px
-      text-shadow: 0px 1px 16px rgba(0,0,0,0.5), 0px 0px 1px rgba(0,0,0,0.5)
+      text-shadow: 0px 0px 16px rgba(255,255,255,0.5), 0px 0px 5px rgba(0,0,0,0.75)
     .author-image
       display: inline-block
       width: 40px
@@ -317,12 +332,12 @@ body
       font-size: 1.5em
       margin-right: 6px
     .post-meta-text
-      color: rgba(255,255,255,0.75)
+      color: rgba(255,255,255,0.85)
       letter-spacing: -0.02em
-      font-weight: 400
+      font-weight: 800
       font-style: normal
       text-shadow: 0px 1px 4px rgba(0,0,0,0.25), 0px 0px 1px rgba(0,0,0,0.5)
-      font-size: 14px
+      font-size: 16px
       overflow: hidden
       font-family: $font-sans
       white-space: nowrap
@@ -391,29 +406,34 @@ body
       margin: 0
       font-family: $font-sans
       margin-bottom: 4px
+      margin-top: 0.5em
     h2, h1
       letter-spacing: -0.02em
       font-weight: 700
       font-style: normal
       font-size: 32px
       line-height: 1.2
-      padding-top: 31px
-      margin-bottom: 4px
+      padding-top: 1em
+      //margin-bottom: 4px
+      margin-bottom: 0.5em
+      margin-top: 1em
     h1
       border-bottom: 1px solid lightgray
-      padding-bottom: 0.5em
-      margin-bottom: 1em
+      padding-bottom: 0.25em
+      //margin-bottom: 1em
     p
       font-weight: 400
       font-style: normal
       font-size: 22px
       line-height: 30px
       margin: 0
-      padding-bottom: 30px
+      //padding-top: 30px
       color: #333
       -webkit-hyphens: auto
       -moz-hyphens: auto
       hyphens: auto
+    p + p
+      padding-top: 20px
     a
       color: #333
       text-decoration: underline

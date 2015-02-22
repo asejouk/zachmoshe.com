@@ -14,6 +14,8 @@
           </div>
           <div class="post-meta">
             <h1 class="post-title">{{ page.title }}</h1>
+          </div>
+          <div class="post-meta-bottom">
             <div class="cf post-meta-text">
               <div class="author-image" style="background-image: url({{ site.author_image }})">Blog Logo</div>
               <h4 class="author-name" itemprop="author" itemscope itemtype="http://schema.org/Person">{{ site.author }}</h4>
@@ -85,6 +87,7 @@
             </footer>
           </div>
         </div>
+        {% include disqus.html %}
       </article>
     </main>
     <div class="bottom-closer">
@@ -97,6 +100,9 @@
         <a href="/" class="btn">Back to Overview</a>
       </div>
     </div>
+    
+    {% include addthis.html %}
     {% include javascripts.html %}
+
   </body>
 </html>

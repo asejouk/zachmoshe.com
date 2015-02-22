@@ -11,7 +11,8 @@ description: >
 
 email: zachmoshe@gmail.com
 #blog logo
-logo: "/assets/images/zm_logo.jpg"
+logo: "/assets/images/author.jpg"
+corner_logo: "/assets/images/zm_logo.jpg"
 # blog cover
 cover: "/assets/images/blog_cover.jpg"
 
@@ -29,30 +30,30 @@ social:
   - icon:	twitter
     url:	https://twitter.com/zachmoshe
     desc: Follow me on twitter
-    share_url: http://twitter.com/share
-    share_title: ?text=
-    share_link: "&amp;url="
+    # share_url: http://twitter.com/share
+    # share_title: ?text=
+    # share_link: "&amp;url="
 
   - icon:	facebook
     url:	https://facebook.com/zach.moshe
     desc: Connect with me on facebook
-    share_url: //www.facebook.com/sharer.php
-    share_title: ?t=
-    share_link: "&amp;u="
+    # share_url: //www.facebook.com/sharer.php
+    # share_title: ?t=
+    # share_link: "&amp;u="
 
   - icon:	github
     url:	https://github.com/zachmoshe
     desc:	Fork me on github
-    share_url:
-    share_title:
-    share_link:
+    # share_url:
+    # share_title:
+    # share_link:
 
   - icon: linkedin
     url: https://www.linkedin.com/in/zachmoshe
     desc: Connect with me on linkedin
-    share_url: http://www.linkedin.com/shareArticle?mini=true
-    share_title: "&title="
-    share_link: "&url="
+    # share_url: http://www.linkedin.com/shareArticle?mini=true
+    # share_title: "&title="
+    # share_link: "&url="
 
   - icon: stack-overflow
     url: http://stackoverflow.com/users/1643257/zach-moshe
