@@ -11,6 +11,10 @@ For some data processing we do at work, I wanted to use [Hadoop Streaming](http:
 
 This time, I had to use some gems, and my code was a bit larger, so I got into some corners of different ruby versions (e.g. `Array#to_h` only exists from ruby 2.1). While I could work out around the ruby versions and write my code so it's compatible with ruby 1.8.7 (which is normally installed by default), I had to use the external packages and wanted to 'do it right'. No hacks, no manual installations on the cluster and nothing that can't be easily reproduced on other clusters (we use [EMR](http://aws.amazon.com/elasticmapreduce) so I spin clusters almost every day).
 
+_Thanks go to Ido Hadanny who [did the same for Python](https://ihadanny.wordpress.com/2014/12/01/python-virtualenv-with-pig-streaming/) and therefore can be considered as the 'spiritual father' of this post._
+
+<separator/>
+
 For the purpose of this post, we'll use the `geokit` gem that gives us the distance between two geo locations (long+lat). We'll run a Hadoop MR Streaming job to find for each country in the world, the city that is the closest to its geographical center (calculated from the max/min long/lat). This is obviously a stupid project that can run on my old cellphone's CPU, but it'll do the trick for this post. If you want to follow the steps, clone the [Github repo](https://github.com/zachmoshe/zachmoshe.com-use-ruby-gems-with-hadoop-streaming):  
 
 _Notice you'll need ruby 2.1 or higher to run this project_
@@ -216,3 +220,4 @@ BM	latin,Brackish Pond	2.101755422455864
 {% endhighlight %}
 
 By the way, the country with the closest city to its center is San Marino. The city of Borgo Maggiore is about 200m from the country center.
+
