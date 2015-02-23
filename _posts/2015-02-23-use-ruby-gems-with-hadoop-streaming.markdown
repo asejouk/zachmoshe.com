@@ -3,6 +3,8 @@ layout: post
 mini_image: /assets/article_images/2015-02-23-use-ruby-gems-with-hadoop-streaming/mini_header.jpg
 image: /assets/article_images/2015-02-23-use-ruby-gems-with-hadoop-streaming/header.jpg
 tags: aws hadoop ruby
+description: > 
+  How to use ruby gems in a script that goes to Hadoop Streaming? Dealing with dependency management, packaging and deploying the archive to the cloud.
 ---
 
 For some data processing we do at work, I wanted to use [Hadoop Streaming](http://hadoop.apache.org/docs/r1.2.1/streaming.html) to run through a file with my ruby mapper code. I've used ruby and Hadoop Streaming in the past, but normally just for simple scripts that didn't require anything but the standard packages that come with every installation of ruby.

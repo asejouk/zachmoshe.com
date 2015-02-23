@@ -2,6 +2,7 @@
 layout: page
 title: About
 permalink: /about/
+image: /assets/images/blog_cover.jpg
 ---
 
 I'm a skilled software developer, driven by data and challenges, with experience and interest in the area of online fraud prevention. In my past roles I've been leading a development team at PayPal, was the head of development at CapitalCadence (startup company) and today I'm a Software Developer Manager for fraud prevention at Wonga. I love data, love drilling down and mining insights from it but more than that I love bringing insights to the real world and build actual solutions with them.
