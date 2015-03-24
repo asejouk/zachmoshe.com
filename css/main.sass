@@ -396,9 +396,12 @@ body
       text-overflow: ellipsis
   .post-content
     width: 100%
+    padding-top: 450px
     font-family: $font-serif
     color: #333
     text-align: justify
+    h1,h2,h3,h4,h5,h6
+      text-align: left
     h1, h2, h3
       font-family: $font-sans
     h3, h4, h5, h6
@@ -410,7 +413,7 @@ body
       margin: 0
       font-family: $font-sans
       margin-bottom: 4px
-      margin-top: 0.5em
+      margin-top: 0.75em
     h2, h1
       letter-spacing: -0.02em
       font-weight: 700
@@ -431,22 +434,24 @@ body
       font-size: 22px
       line-height: 30px
       margin: 0
-      //padding-top: 30px
       color: #333
       -webkit-hyphens: auto
       -moz-hyphens: auto
       hyphens: auto
+
     p + p
       padding-top: 20px
     a
-      color: #333
-      text-decoration: underline
+      color: #5188FF
+      text-decoration: none
     img
       max-width: 100%
       margin: 0 auto
     figure
       margin: 0
       padding: 0 0 30px
+    figure.image
+      text-align: center
     figcaption
       font-weight: 400
       font-style: italic
@@ -478,7 +483,7 @@ body
         mmargin-left: -26px
         padding-bottom: 3px
     ul, ol
-      padding: 0 0 30px
+      //padding: 0 0 30px
       margin: 0
     li
       padding: 0
@@ -490,9 +495,25 @@ body
       margin-bottom: 12px
       padding-top: 2px
       p
-        padding: 0 0 golden-ratio(1rem,  1)
+        //padding: 0 0 golden-ratio(1rem,  1)
     ol li
       list-style-type: decimal
+    table
+      margin: 20px auto 20px auto
+      border-collapse: collapse
+      border-style: hidden
+      font-size: 18px
+    table thead tr
+      border-bottom: 1px solid gray
+    table th,td
+      padding: 5px 10px 5px 10px 
+
+    ul.bxslider
+      li
+        // aligns the images to the center
+        left: 50%
+        margin-left: -50%
+
   .bottom-teaser
     padding: 50px 0
     font-family: $font-sans

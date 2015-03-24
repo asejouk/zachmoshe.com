@@ -1,7 +1,12 @@
-<script src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+<!-- Google CDN Hosted jQuery  -->
+<script src="/assets/js/jquery-2.0.2.min.js"></script>
+
 <script type="text/javascript" src="{{ "/assets/js/jquery.fitvids.js" | prepend: site.baseurl  }}"></script>
 <script type="text/javascript" src="{{ "/assets/js/index.js" | prepend: site.baseurl  }}"></script>
 <script type="text/javascript" src="{{ "/assets/js/readingTime.min.js" | prepend: site.baseurl  }}"></script>
+
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
 <script>
 (function ($) {
   "use strict";
@@ -36,4 +41,9 @@
   });
 }(jQuery));
 </script>
+
+{% if page.sliders %}
+  <!-- bxSlider Library  -->
+  <script src="/assets/js/jquery.bxslider.min.js"></script>
+{% endif %}
 

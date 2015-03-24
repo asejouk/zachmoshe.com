@@ -23,6 +23,14 @@
               $(this).wrap('<figure class="image"></figure>')
               .after('<figcaption>'+$(this).attr("alt")+'</figcaption>');
         });
+
+        // activate sliders if any
+        $(".bxslider").bxSlider({
+            mode: 'fade',
+            infiniteLoop: false,
+            hideControlOnEnd: true,
+            responsive: false
+        })
         
     });
 
