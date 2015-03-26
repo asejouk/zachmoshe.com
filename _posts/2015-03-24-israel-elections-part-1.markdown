@@ -50,7 +50,7 @@ The data
 ======
 Generally, data files used in this post can be found in [this GitHub repo](https://github.com/zachmoshe/zachmoshe.com-israel-elections-part-1) and the code is shared through [this iPython notebook](https://wakari.io/sharing/bundle/zachmoshe/zachmoshe.com%20-%20IL%20elections%20part%201).
 
-As mentioned before, the election results, broke down by ballots, can be downloaded [here](http://votes20.gov.il/ballotresults). The downloaded file had some UTF problems, but after overcoming these, I've created a valid tab-delimited file ([raw-votes-19.txt](https://github.com/zachmoshe/zachmoshe.com-israel-elections-part-1/blob/master/raw-votes-19.txt)). In addition, I've added some calculated columns to make work easier.
+As mentioned before, the election results, broken down by ballots, can be downloaded [here](http://votes20.gov.il/ballotresults). The downloaded file had some UTF problems, but after overcoming these, I've created a valid tab-delimited file ([raw-votes-19.txt](https://github.com/zachmoshe/zachmoshe.com-israel-elections-part-1/blob/master/raw-votes-19.txt)). In addition, I've added some calculated columns to make work easier.
 
 ### Geo-location 
 [The Google Geocoding API](https://developers.google.com/maps/documentation/geocoding/#Geocoding) helped me with the extra mile to the  [ballots_locations.txt](https://github.com/zachmoshe/zachmoshe.com-israel-elections-part-1/blob/master/ballots_geolocations.csv) file that has a geo-location (long,lat) for every ballot. Another file with geo-locations for each city in the data file is [cities_geo.txt](https://github.com/zachmoshe/zachmoshe.com-israel-elections-part-1/blob/master/cities_geo.txt).
@@ -102,7 +102,7 @@ If we get out of the ballots and elections world, what we actually have here is 
 
 Generally speaking, we could define an objective function based on these two measures and approach the whole problem as an optimization problem, looking for the clusters assignment that will minimize the function. I wanted to start with a greedy approach for this post, but going forward, I'll will probably spend some time on other approaches as well.
 
-The more clusters we break the dataset into, the minimal AVG(STD) we'll get. Eventually, if every point is in its own cluster, we get AVG(STD)=0. So, in order to agree on some basic rules - I'll define a valid solution to have __at most 8 clusters__ (rule of thumb, you could run the same experiment with more or less clusters).
+The more clusters we break the dataset into, the smaller AVG(STD) we'll get. Eventually, if every point is in its own cluster, we get AVG(STD)=0. So, in order to agree on some basic rules - I'll define a valid solution to have __at most 8 clusters__ (rule of thumb, you could run the same experiment with more or less clusters).
 
 
 Benchmark - A simple KMeans clustering (geographical only)
