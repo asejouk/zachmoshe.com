@@ -13,10 +13,10 @@
             Article Image
           </div>
           <div class="post-meta">
-            <h1 class="post-title">{{ page.title }}</h1>
+            <h1 class="post-title {{page.title_color_scheme if page.title_color_scheme}}">{{ page.title }}</h1>
           </div>
           <div class="post-meta-bottom">
-            <div class="cf post-meta-text">
+            <div class="cf post-meta-text {{page.title_color_scheme if page.title_color_scheme}}">
               <div class="author-image" style="background-image: url({{ site.author_image }})">Blog Logo</div>
               <h4 class="author-name" itemprop="author" itemscope itemtype="http://schema.org/Person">{{ site.author }}</h4>
               on
@@ -37,7 +37,6 @@
               <h4 class="author-name" itemprop="author" itemscope itemtype="http://schema.org/Person">{{ page.author }}</h4>
               on
               <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date_to_string }}</time>
-              <!-- , tagged on {{#foreach tags}}<span class="post-tag-{{slug}}">{{#if @first}}{{else}}, {{/if}}<a href="/tag/{{slug}}">{{name}}</a></span>{{/foreach}} -->
             </div>
           </div>
         </div>
@@ -46,7 +45,7 @@
         <br>
         {% endif %}
         <section class="post-content">
-          <div class="post-reading">
+          <div class="post-reading {{page.title_color_scheme if page.title_color_scheme}}">
             <span class="post-reading-time"></span> read
           </div>
           <a name="topofpage"></a>

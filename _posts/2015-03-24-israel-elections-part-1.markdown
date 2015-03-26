@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "Looking for the state of TLV - IL elections part #1"
+title_color_scheme: dark
 mini_image: /assets/article_images/israel-elections-part-1/mini_header.jpg
 image: /assets/article_images/israel-elections-part-1/header.jpg
 tags: elections data clustering 
@@ -47,7 +48,7 @@ The whole idea came from a [data-hackathon](http://www.meetup.com/Data-Science-T
 
 The data
 ======
-Generally, data files used in this post can be found in [this GitHub repo](https://github.com/zachmoshe/zachmoshe.com-israel-elections-part-1) and the code is shared through iPython notebook. **TODO**
+Generally, data files used in this post can be found in [this GitHub repo](https://github.com/zachmoshe/zachmoshe.com-israel-elections-part-1) and the code is shared through [this iPython notebook](https://wakari.io/sharing/bundle/zachmoshe/zachmoshe.com%20-%20IL%20elections%20part%201).
 
 As mentioned before, the election results, broke down by ballots, can be downloaded [here](http://votes20.gov.il/ballotresults). The downloaded file had some UTF problems, but after overcoming these, I've created a valid tab-delimited file ([raw-votes-19.txt](https://github.com/zachmoshe/zachmoshe.com-israel-elections-part-1/blob/master/raw-votes-19.txt)). In addition, I've added some calculated columns to make work easier.
 
