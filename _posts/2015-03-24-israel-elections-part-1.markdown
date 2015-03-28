@@ -116,7 +116,7 @@ _avg/std is weighted by the number of votes per ballot_
 * side_score std - `0.284`
 
 ### KMeans results
-I've used KMeans with K=8, without adding the side_score as another dimension. I did however tested 2 different spaces for the points. One is the regular (long,lat) space, the other is the distance-from-major-cities space where every (long,lat) point is converted into the distance from Tel Aviv, Jerusalem and Haifa. Hopefully that would give more "natural" clusters.
+I've used KMeans with K=8, without adding the side_score as another dimension. I did however test 2 different spaces for the points. One is the regular (long,lat) space, the other is the distance-from-major-cities space where every (long,lat) point is converted into the distance from Tel Aviv, Jerusalem and Haifa. Hopefully that would give more "natural" clusters.
 
 ![KMeans pure geo clustering (no side_score). On the left - (long,lat) space, on the right - major cities distances space](/assets/article_images/israel-elections-part-1/pure_geo_clustering.png)
 
