@@ -9,13 +9,13 @@ description: >
 
 ---
 
-Or - OMG! My AWS free-tier is over in 2 months and there's no way I'm paying monthly fees for almost idle machines.
+Or - OMG! My AWS free-tier is over in 2 months and there's no way I'm paying monthly fees for almost idle machines!
 
-A week or so ago, I suddenly realized that my AWS free-tier is about to expire in 2 months. I mainly use it for spot-isntances that I take for a couple of hours to run some heavy calculations and to experiment with new AWS products. However, since a <code>t1.micro</code> machine was given for free, I always had one on and whenever I wanted just a small API for a project, I naturally used it. Some of those projects were neglected and one evolved to a non-commercial website, just for fun and my own experiment with tools and technologies. This is the <a href="http://griddlers.ninja">Griddlers Ninja!</a> website. (Griddlers = Nokogiri, Nonogram, שחור ופתור)
+A week or so ago, I suddenly realized that my AWS free-tier is about to expire in 2 months. I mainly use it for spot-instances that I take for a couple of hours to run some heavy calculations and to experiment with new AWS products. However, since a <code>t1.micro</code> machine was given for free, I always had one on and whenever I wanted just a small API for a project, I naturally used it. Some of those projects were neglected and one evolved to a non-commercial website, just for fun and my own experiment with tools and technologies. This is the <a href="http://griddlers.ninja">Griddlers Ninja!</a> website. (Griddlers = Nokogiri, Nonogram, שחור ופתור)
 
-<a href="http://griddlers.ninja">Griddlers Ninja!</a> started as a small python project, just to visualize the process of solving a <a href="http://www.wikiwand.com/en/Nonogram">Griddlers</a> board. When solving griddlers by hand, we tend to iterate rows and columns, looking for certain cells (black or white) and coloring them. This data helps us on the next iteration to color some more until the board is solved. I thought there was some ignored information here, and that's the fact that after every iteration, we can calculate the probability of every cell to be black (based on the number of still-legal placements in which it is black out of the total number of legal placement for a given row). Using that, we can draw the board with grayscale colored cells and see how it evolves between iterations and whether we see the image 'blurred' after an iteration or two.
+<a href="http://griddlers.ninja">Griddlers Ninja!</a> started as a small python project, just to visualize the process of solving a <a href="http://www.wikiwand.com/en/Nonogram">Griddlers</a> board. When solving griddlers by hand, we tend to iterate rows and columns, looking for certain cells (black or white) and coloring them. This data helps us on the next iteration to color some more until the board is solved. I thought there was some ignored information here, and that's the fact that after every iteration, we can calculate the probability of every cell to be black (based on the number of still-legal placements in which it is black out of the total number of legal placements for a given row). Using that, we can draw the board with grayscale colored cells and see how it evolves between iterations and whether we see the image 'blurred' after an iteration or two.
 
-I'm not going to explain any further about the website itself, you can read some more and see a representation of the iterations <a href="http://griddlers.ninja/about">here</a>. This post will discuss the technical infrastructure behind the app and how I changed it so it will cost me fractions than the (relatively low) monthly price of <code>t1.micro</code> + smallest RDS instance.
+I'm not going to explain any further about the website itself, you can read some more and see a representation of the iterations <a href="http://griddlers.ninja/about">here</a>. This post will discuss the technical infrastructure behind the app and how I changed it so it will cost me fractions of the (relatively low) monthly price of <code>t1.micro</code> + smallest RDS instance.
 
 
 Griddles Ninja old architecture
@@ -36,32 +36,34 @@ As for costs (outside of free-tier):
 Moving to a serverless architecture
 ===============
 
-I don't take it personally, but let's just say that traffic to the site doesn't justify a 24x7 running server. My old Casio calculator can handle it and it'll still be idle 50% of the time... While Rails also generate HTML pages and handles regular traffic, the Python workers barely work at all (only when someone submits a new board). Since they all served together by the same <a href="http://aws.amazon.com/ec2/instance-types/#burst">Burstable Performance instance</a>, whenever a job comes in and the worker wakes up, it consumes all CPU credits pretty quick and it may take hours to finish, meanwhile Rails is having troubles rendering pages as it doesn't get enough CPU. In order to get rid of my EC2 machine, I had to move the frontend and the processing somewhere else.
+I don't take it personally, but let's just say that traffic to the site doesn't justify a 24x7 running server. My old Casio calculator can handle it and it'll still be idle 50% of the time... While Rails generates HTML pages and handles regular traffic, the Python workers barely work at all (only when someone submits a new board). Since they are all served together by the same <a href="http://aws.amazon.com/ec2/instance-types/#burst">Burstable Performance instance</a>, whenever a job comes in and the worker wakes up, it consumes all CPU credits pretty quickly and it may take hours to finish, by this time Rails is having troubles rendering pages as it doesn't get enough CPU. In order to get rid of my EC2 machine, I had to move the frontend and the processing somewhere else.
 
 ![Griddlers ninja old architecture](/assets/article_images/griddlers-ninja-serverless/new-arch.png)
 
+All code is in a <a href="https://github.com/zachmoshe/griddlers">GitHub</a> repository.
+
 ### Moving the frontend
 
-That's easy. It shouldn't be served by Rails at all. I only put it there temporarily because it was a simple GUI and I suck at frontend technologies. I did, however, add AngularJS to my backlog. Months have passed, and I have finally found some time to see what is this marvelous piece of work everyone says that Google has put together. I won't say I'm an Angular expert now, I've probably only touched the basics, and I can't compare it to any of the others simply because it's my first JavaScript project. What I can say is that I don't like JavaScript at all and that I had to use Google every 5 minutes just to find out that there is no library function for what I wanted to do and everyone on stackoverflow suggests that I add a method to Prototype for that. Ruby is much more fun!  
+That's easy. It shouldn't be served by Rails at all. I only put it there temporarily because it was a simple GUI and I suck at frontend technologies. I did, however, add AngularJS to my backlog. Months have passed, and I have finally found some time to see what is this marvelous piece of work everyone says that Google has put together. I won't say I'm an Angular expert now, I've probably only touched the basics, and I can't compare it to any of the other platforms simply because it's my first JavaScript project. What I can say is that I don't like JavaScript at all and that I had to use Google every 5 minutes just to find out that there is no library function for what I wanted to do and everyone on stackoverflow suggests that I add a method to Prototype for that. Ruby is much more fun!  
 
-Anyway, the whole frontend was moved to an AngularJS app which is stored on S3 so it costs almost nothing. I didn't even bother to add <a href="http://aws.amazon.com/cloudfront/">CloudFront</a> to the mix because I trust you to keep the momentum by not generating traffic.. 
+Anyway, the whole frontend was moved to an AngularJS app which is stored and being served by S3 so it costs almost nothing. I didn't even bother to add <a href="http://aws.amazon.com/cloudfront/">CloudFront</a> to the mix because I trust you to keep the momentum by _not_ generating a lot of traffic.. 
 
 ### Getting rid of the backend (RoR)
 
-Except of serving pages, the backend also handled all persistancy to the DB, and submitting the jobs. Not a very complex API.  
-It should support: 
+Except for serving pages, the backend also handled all persistancy to the DB, and submitting the jobs. Not a very complex API.  
+It supports: 
 
-- Listing top solved boards (doesn't even matter if it's last submitted or just random)
+- Listing top solved boards (doesn't even matter if these are the last-submitted or just random)
 - Fetching results for an already solved board 
 - Submitting a new one
 
-Since none of the data storage solutions is a pay-as-you-go only solution, I decided to use S3 as a key-value store for my requests and responses data. My luck here was that the API is really simple and I didn't need any querying abilities. I also set a lifecycle policy on that bucket to automatically delete object after a month, so I won't accumulate any costs over time.
+Since none of the data storage solutions is a pay-as-you-go only solution, I decided to use S3 as a key-value store for my requests and responses data. My luck here was that the API is really simple and I didn't need any querying abilities. I also set a lifecycle policy on that bucket to automatically delete objects after a month, so I won't accumulate any costs over time.
 
-Triggering the workers is a different story, here I must have a queue that enforces single subscriber per message and is always up. <a href="http://aws.amazon.com/sqs/">SQS</a> and <a href="http://aws.amazon.com/sns/">SNS</a> provide just that and don't have any fixed fees. Messages can now piled up in the queue, but something needs to launch a worker to handle them. As you can guess, I'm not going to have a dedicated server for this, and actually - I want to get a decent server for the calculation phase while keeping my fees to the minimum.
+Triggering the workers is a different story, here I must have a queue that enforces single subscriber per message and is always up. <a href="http://aws.amazon.com/sqs/">SQS</a> and <a href="http://aws.amazon.com/sns/">SNS</a> provide just that and don't have any fixed fees. Messages can now pile up in the queue, but something needs to launch a worker to handle them. As you can guess, I'm not going to have a dedicated server for that, and actually - I want to get a decent server for the calculation phase while keeping my fees to the minimum.
 
-By launching <a href="http://aws.amazon.com/ec2/purchasing-options/spot-instances/">EC2 Spot Instances</a> I could bid $0.03/Hour and get a <code>m4.large</code> machine (2 CPUs, 8GB) which is a huge improvement from the 5 minutes of CPU I was getting from the <code>t1.micro</code> machine before my credit run out.. 
+By launching <a href="http://aws.amazon.com/ec2/purchasing-options/spot-instances/">EC2 Spot Instances</a> I could bid $0.03/Hour and get a <code>m4.large</code> machine (2 CPUs, 8GB) which is a huge improvement from the 5 minutes of CPU I was getting from the <code>t1.micro</code> machine before my credit ran out.. 
 
-The SNS topic is the main hub here. There are two other components that subscribe on that topic and get invoked when a new board is sent:
+The SNS topic is the main hub here. There are two components that subscribe on that topic and get invoked when a new board is sent:
 
 - The Python workers' SQS queue (from which the workers get jobs)
 - An <a href="http://aws.amazon.com/lambda">AWS Lambda</a> function that spins a worker if needed (actually - creates a spot instance request that will be fulfilled when the price is below my bid)
@@ -96,7 +98,7 @@ def poll
 end
 {% endhighlight %}
 
-The <code>poll</code> function simply uses the <a href="http://docs.aws.amazon.com/sdkforruby/api/Aws/SQS/QueuePoller.html">QueuePoller</a> object (<code>poller</code> variable) to poll the queue. The default <a href="http://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/AboutVT.html">visibility timeout</a> for messages in this queue is 4 hours as it might take a lot of time to solve a very large board. If an error has occured, I don't want to wait 4 hours to re-pull the message so I'm changing visibility timeout to 5 seconds and make sure the message isn't deleted. When a message comes in, we call the `handle_message` function:
+The <code>poll</code> function simply uses the <a href="http://docs.aws.amazon.com/sdkforruby/api/Aws/SQS/QueuePoller.html">QueuePoller</a> object (<code>poller</code> variable) to poll the queue. The default <a href="http://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/AboutVT.html">visibility timeout</a> for messages in this queue is 4 hours as it might take a lot of time to solve a very large board. If an error has occured, I don't want to wait 4 hours to re-pull the message so I'm changing visibility timeout to 5 seconds and making sure the message isn't deleted. When a message comes in, we call the `handle_message` function:
 
 {% highlight ruby %}
 def handle_message(msg)
@@ -146,7 +148,7 @@ What's important to understand here is that we must take care of the scenario wh
 
 ### The Lambda function
 
-The lambda function is spinning a worker machine if there isn't already one running. It's invoked whenever a message gets to the SNS queue and checks if there is another spot request open for the same app (or if it's a 'special message') if there isn't, it launches a new one. Code is pretty straight forward.
+The lambda function is spinning a worker machine if there isn't already one running. It's invoked whenever a message gets to the SNS queue and checks if there is another spot request open for the same app (or if it's a 'special message') if there isn't, it launches a new one. The code is pretty straight forward:
 
 {% highlight javascript %}
 var aws = require('aws-sdk');
@@ -173,7 +175,7 @@ exports.handler = function(event, context) {
     Filters: [
       { Name: 'state', Values: [ 'open', 'active' ] },
       { Name: 'tag:app', Values: [ appName ] }
-      ]      
+    ]      
   };
 
   // params for spot-instance-request
@@ -244,7 +246,7 @@ exports.handler = function(event, context) {
 
 ### Costs
 
-I'll calculate based on 10K hits per month and 1K job requests. All the regular disclaimers apply - it's a very rough estimation...
+I'll calculate based on 10K hits per month and 500 job requests. Ye.. I'm laughing as well...
 
 - S3 
   - Hosting and serving the AngularJS app (~3MB)
@@ -258,7 +260,7 @@ I'll calculate based on 10K hits per month and 1K job requests. All the regular 
   - **Total**: $3.22
 
 - EC2
-  - $0.6 (spot instance bid of $0.03 * 20 hours/Month)
+  - $1.25 (spot instance bid of $0.03 * 5 minutes/Job)
 
 - SNS/SQS
   - $0.0 (No chance I'm going over 1M messages/Month...)
@@ -266,14 +268,14 @@ I'll calculate based on 10K hits per month and 1K job requests. All the regular 
 - Lambda
   - $0.0 (Under 1M/Month)
 
-- **Total**: $3.28
+- **Total**: $4.47
 
-Pat on the back. A huge improvement! And don't forget that assumes 10K visitors/Month and we all know that peace will come to the middle east before 10K people will use the Griddlers Ninja... Anyway, that saves me $19.04/Month or $228.48/Year. <a href="http://www.zdnet.com/pictures/the-very-best-tech-you-can-buy-for-200-or-less/">Here is a list of cool techie things you can buy with less than $200</a>. I think I'll choose something from there as a reward!
+Pat on the back. A huge improvement! And don't forget that assumes 10K visitors/Month and we all know that peace will come to the middle east before 10K people will use the Griddlers Ninja... Anyway, that saves me $17.85/Month or $214.2/Year. <a href="http://www.zdnet.com/pictures/the-very-best-tech-you-can-buy-for-200-or-less/">Here is a list of cool techie things you can buy with less than $200</a>. I think I'll choose something from there as a reward!
 
 
 Future tasks
 ==========
 
-Currently, as this is a personal project, I didn't create a  <a href="http://aws.amazon.com/cloudformation/">CloudFormation</a> template for this stack but as a best practice I can highly recommend that. When I do that, I'll have to change some of the scripts to be easier to manipulate by an installation script. 
+Currently, as this is a personal project, I didn't create a  <a href="http://aws.amazon.com/cloudformation/">CloudFormation</a> template for this stack but as a best practice I can highly recommend that. When I do that, I'll have to change some of the scripts to be easier to manipulate by an automated deployment process. 
 
 
