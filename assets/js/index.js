@@ -25,11 +25,19 @@
         });
 
         // activate sliders if any
-        $(".bxslider").bxSlider({
-            mode: 'fade',
-            infiniteLoop: false,
-            hideControlOnEnd: true,
-            responsive: false
+        if ($(".bxSlider").size() > 0) { 
+            $(".bxslider").bxSlider({
+                mode: 'fade',
+                infiniteLoop: false,
+                hideControlOnEnd: true,
+                responsive: false
+            })
+        }
+
+        // hide all math after .showmath
+        $(".showmath").next("p,mathpart").find("mathpart").hide()
+        $(".showmath").click(function() { 
+            $(this).next("p,mathpart").find("mathpart").slideToggle();
         })
         
     });
