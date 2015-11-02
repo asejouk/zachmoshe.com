@@ -171,7 +171,7 @@ And, for the specific summation we're after:
 </mathpart>
 
 
-Another thing we can do is to simulate many random cyclic rows, count the number of blocks and compare to the estimator we got here. Ohh, how lucky I am to know python ([code is here](python code link)).
+Another thing we can do is to simulate many random cyclic rows, count the number of blocks and compare to the estimator we got here. Ohh, how lucky I am to know python ([code is here](https://github.com/zachmoshe/zachmoshe.com-random-polygons)).
 
 The following graphs shows \\( E_8(k) \\) (*N*=8, *k*=1..8) by *p*. The blue line is the average number of blocks in 1000 iterations and the green line is the estimated number based on the expression above. I think we've nailed the cyclic row!
 
@@ -182,7 +182,7 @@ The following graphs shows \\( E_8(k) \\) (*N*=8, *k*=1..8) by *p*. The blue lin
 
 Just as a reminder, we started with the 'cyclic assumption' because we assumed that for large values of *N*, the average number of blocks of a 'regular' row and a cyclic one will converge. It's also important to mention that for the original purpose of this problem, we want to divide the square into a fairly dense grid (N~100 at least). 
 
-Let's run some tests to verify that the assumption holds for rows and grids. If you want, you can continue running the [python notebook](python code link) to get the following graphs. The grid simulation might take some time... 
+Let's run some tests to verify that the assumption holds for rows and grids. If you want, you can continue running the [python notebook](https://github.com/zachmoshe/zachmoshe.com-random-polygons) to get the following graphs. The grid simulation might take some time... 
 
 
 ## Verify the Cyclic Assumption for a Row
