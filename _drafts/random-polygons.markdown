@@ -12,7 +12,7 @@ Let's generate random non-overlapping polygons on a plane! Sounded fairly simple
 
 I originally had an idea to explore another optimization problem. I don't want to write much about it as I'll probably cover it in a future post but as a first step to it, I had to be able to cover a square area with random non-overlapping polygons. I was mainly interested in equally covering the whole plane (more or less) with many shapes that don't overlap. Other than that, I didn't care much and expected it to be fairly simple, although not trivial. Luckily enough, [Prof. Dan Halperin](http://acg.cs.tau.ac.il/danhalperin) works in the office right next to me. He showed me [a paper](http://arxiv.org/abs/1502.06195) he wrote on [Minikowski Sum](https://www.wikiwand.com/en/Minkowski_addition), and some of the random polygons they generated there proved me that I don't really want random polygons. Random polygons also include holes, crosses and polygons with 200 vertices that just look like an overkill for me.
 
-So I went with a second approach - why not considering the square area as a large grid, remove some of the boundaries between adjacent cells to create randomly shaped blocks, and then, draw exactly one random polygon inside every block. Given a block, drawing the polygon inside shouldn't be that difficult and although this approach doesn't cover all possible polygons, it's much simpler and straight-forward and ensures me full coverage, non-overlapping and polygons that look more like what ordinary people expect them to.
+So I went with a second approach - why not considering the square area as a large grid, remove some of the boundaries between adjacent cells to create randomly shaped blocks, and then, draw exactly one polygon inside every block. Given a block, drawing the polygon inside shouldn't be that difficult and although this approach doesn't cover all possible polygons, it's much simpler, straight-forward and ensures me full coverage, non-overlapping and polygons that look more like what ordinary people expect them to.
 
 In high level, it will look something like this:
 
@@ -53,14 +53,14 @@ Our goal in this (long) section will be to explain the expression for the averag
 
 First, I'll note that while the original problem came from the world of grids, tiles and separators, one can easily transform the grid to a graph (*where every cell is a vertex*), the separators to edges (*where every two cells that are not separated are connected with an edge*) and therefore ask: how many connected components are there in a [Random Graph](http://www.wikiwand.com/en/Random_graph) with a probability p for an edge.
 
-The only difference, and apparently it's a big one, is that a grid is not a regular graph and not every vertex can be connected to all the others. Only those who are adjacent on the grid can have an edge between them. While I've found some (pretty complicated) theorems on number of connected components for a general random graph, I couldn't find anything that I'll be able to convert to the grid use-case (aka a [Lattice Graph](https://www.wikiwand.com/en/Lattice_graph)) and so I decided to try to get to an estimation on my own.
+The only difference, and apparently that's a big one, is that a grid is not a regular graph and not every vertex can be connected to all the others. Only those who are adjacent on the grid can have an edge between them. While I've found some (pretty complicated) theorems on number of connected components for a general random graph, I couldn't find anything that I'll be able to convert to the grid use-case (aka a [Lattice Graph](https://www.wikiwand.com/en/Lattice_graph)) and so I decided to try and get an estimation on my own.
 
 
 ## Reducing to a Random Row
 
 A grid, as being a two-dimensional object, is not a very simple one for combinatorics calculations. I tried to tackle it from different angles and decided the best would be to reduce the problem to something more convenient.
 
-A simpler version of a grid would be a single row. If we can find an expression that ties together block sizes, *N* and *p* for a single row, it might be easier to get the more generic grid case from there. Basically want the following problem:
+A simpler version of a grid would be a single row. If we can find an expression that ties together block sizes, *N* and *p* for a single row, it might be easier to get the more generic grid case from there. Basically, we are looking on the following problem:
 
 *What's the expected number of blocks of size K in a row of size N with p as the probability for a separator?*
 $$ E_N(k) = ? $$
@@ -71,7 +71,7 @@ In the example above, we have 3 blocks of size 1, 2 blocks of size 2 and 1 of si
 
 
 ## Reducing Again to a Cyclic Row
-A 'regular' row is very annoying as well because the first and last cells are different from the others (have only one adjacent cell). If we want to consider the probability for a block to start at the 1st cell, we don't need the first boundary, but in other places we do (same goes for the last boundary). I tried two ways to overcome this. One was writing an expression for an infinite row and then 'look' only on part of it (otherwise all expected numbers are  &#8734;). The other, which is what I moved on with, was to look on a cyclic row (a row where the rightmost separator actually separates the last and the first cell).
+A 'regular' row is very annoying as well because the first and last cells are different from the others (have only one adjacent cell). If we want to consider the probability for a block to start on the 1st cell, we can assume there is no neighbor on the left, but in other cells we'll have to restrict the left separator to be in place. I tried two ways to overcome this. One was writing an expression for an infinite row and then 'look' only on part of it (otherwise all expected numbers are  &#8734;). The other, which is what I moved on with, was to look on a cyclic row (a row where the rightmost separator actually separates the last and the first cell).
 
 This assumptions is clearly not in the original problem, but we can assume it is minor, and for large *N* it won't make a difference (2 different cells out of a 100 don't affect much the number of blocks of size 5..). At the end, when we'll have an expression based on a cyclic row, it'll be worth checking how well it estimates a regular row.
 
@@ -88,12 +88,17 @@ Let's define \\( X_i^k \\) to be a random variable that gets the following value
 
 ![A cyclic row example](/assets/article_images/random-polygons/cyclic-row-example.png)
 
-We denote \\( E_N(k) \\) as the expected number of blocks of size *k* in a cyclic row of size *N*. Because the row is cyclic and blocks can start at the end and span to the beginning, the random variable for the number of blocks in a row should simply be \\( \sum\limits_{i=1}^N{X_i^k} \\). 
+We denoted before \\( E_N(k) \\) as the expected number of blocks of size *k* in a cyclic row of size *N*. Because the row is cyclic and blocks can start at the end and span to the beginning, the random variable for the number of blocks of size *k*  in a row should simply be \\( \sum\limits_{i=1}^N{X_i^k} \\). 
 
 **Here's the tricky part** - Although \\(X_i \\)s are statistically dependent on each other (i.e. if a block of size 3 starts at the 1st cell, another one can't start on the 2nd cell as well), \\( E_N(k) \\) is the **expected value** of the sum of them, and from the [Linearity of Expectation](http://www.wikiwand.com/en/Expected_value#/Linearity) property we get:
 
  \\[
-     E_N(k) = E(X_1^k) + E(X_2^k) + \cdots + E(X_N^k) = P(X_1^k) + P(X_2^k) + \cdots + P(X_N^k) = NP(X) \\\\
+    \begin{align}
+     E_N(k) & = E \left(  \sum\limits_{i=1}^N { X_i^k } \right) \\\\
+     & = E(X_1^k) + E(X_2^k) + \cdots + E(X_N^k)         &&\text{from linearity of expectation}  \\\\
+     & = P(X_1^k) + P(X_2^k) + \cdots + P(X_N^k)         &&\text{X get 0 or 1 with probability P}\\\\
+     & = NP(X)                                                                    &&\text{from symmetry - all P's are the same}
+    \end{align} \\\\ 
     \text{Where } P(X) \text{ is the probability for a block of size } k
  \\]
 
@@ -144,9 +149,9 @@ As we defined, \\( E_N(k) \\) is an expression for how the expected number of bl
 First, let's look on the general summation of \\( iX^i \\):
 \\[
 \begin{align} 
-    \sum\limits_{i=1}^N { iX^i } & = X + 2X^2 + 3X^3 + 4X^4 + ... \\\\
-    & = X(1 + 2X + 3X^2 + 4X^3 + ...) \\\\
-    & = X[X + X^2 + X^3 + X^4]' \\\\
+    \sum\limits_{i=1}^N { iX^i } & = X + 2X^2 + 3X^3 + 4X^4 + \cdots \\\\
+    & = X(1 + 2X + 3X^2 + 4X^3 + \cdots) \\\\
+    & = X[X + X^2 + X^3 + X^4 + \cdots]' \\\\
     & = X \left[ \frac{ a_1(1-q^n) }{ 1-q } \right]' = X \left[ \frac{ X(1-X^N )}{ 1-X } \right]' \\\\
     & = X \left[  \frac{ NX^{N+1}-(N+1)X^N+1 }{ (X-1)^2 } \right] 
 \end{align} \\\\[10pt]
@@ -171,7 +176,7 @@ And, for the specific summation we're after:
 </mathpart>
 
 
-Another thing we can do is to simulate many random cyclic rows, count the number of blocks and compare to the estimator we got here. Ohh, how lucky I am to know python ([code is here](https://github.com/zachmoshe/zachmoshe.com-random-polygons)).
+Another thing we can do is to simulate many random cyclic rows, count the number of blocks and compare to the estimator we got here. Ohh, how lucky I am to know python ([code is here](https://github.com/zachmoshe/zachmoshe.com-random-polygons/blob/master/Random%20Polygons%20Part%201.ipynb)).
 
 The following graphs shows \\( E_8(k) \\) (*N*=8, *k*=1..8) by *p*. The blue line is the average number of blocks in 1000 iterations and the green line is the estimated number based on the expression above. I think we've nailed the cyclic row!
 
@@ -182,12 +187,12 @@ The following graphs shows \\( E_8(k) \\) (*N*=8, *k*=1..8) by *p*. The blue lin
 
 Just as a reminder, we started with the 'cyclic assumption' because we assumed that for large values of *N*, the average number of blocks of a 'regular' row and a cyclic one will converge. It's also important to mention that for the original purpose of this problem, we want to divide the square into a fairly dense grid (N~100 at least). 
 
-Let's run some tests to verify that the assumption holds for rows and grids. If you want, you can continue running the [python notebook](https://github.com/zachmoshe/zachmoshe.com-random-polygons) to get the following graphs. The grid simulation might take some time... 
+Let's run some tests to verify that the assumption holds for rows and grids. If you want, you can continue running the [python notebook](https://github.com/zachmoshe/zachmoshe.com-random-polygons/blob/master/Random%20Polygons%20Part%201.ipynb) to get the following graphs. Notice that the grid simulation might take some time... 
 
 
 ## Verify the Cyclic Assumption for a Row
 
-The python code iterates over values for *N* (from 5 to 250) and for every one, iterates over all p's and averages the number of blocks for 50 iterations. It does it twice. Once with the RegularRow object and the other with CyclicRow. The average absolute difference between them is divided by *N* to normalize the results. We basically get the error in % by *N*.
+The python code iterates over values of *N* (from 5 to 250) and for every one, iterates over all p's and averages the total number of blocks (\\( B_N \\)) for 50 iterations. It does it twice. Once with the RegularRow object and the other with CyclicRow. The average absolute difference between them is divided by *N* to normalize the results. We basically get the error in % by *N*.
 
 ![StraightRow vs. CyclicRow error by N](/assets/article_images/random-polygons/straight-cyclic-error-row.png)
 
@@ -200,20 +205,20 @@ More or less the same, only now the two classes being compared are StraightGrid 
 
 ![StraightGrid vs. CyclicGrid error by N](/assets/article_images/random-polygons/straight-cyclic-error-grid.png)
 
-
+We've shown that both for a row, and for a grid, the cyclic assumption doesn't affect the estimator much when we are dealing with large N's.
 
 # Write the Expression for a Cyclic Grid
 
 Just to recap, we already have the following expressions:
 
-  * The number of each size of a block in a row - \\( E_N(k) \\), where *k* is the block size
-  * The total number of blocks in a row - \\( B_N \\)
+  * The expected number blocks in a row for every size of a block - \\( E_N(k) \\), where *k* is the block size
+  * The expected total number of blocks in a row - \\( B_N \\)
 
 All expressions are by *N* and *p*. 
 
 In the previous section we've looked at the bias we have in the model (we've built it for a cyclic row although our rows are actually regular ones) and we are fairly satisfied with it.
 
-We want to do the same for a 2D grid. First, like before, we'll reduce the problem to a cyclic grid. It had worked once, so why not try this again?
+We want to do the same for a 2D grid. First, like before, we'll reduce the problem to a cyclic grid. It had worked once, and we saw it's safe to use even for grids, so why not try this again?
 
 For simplicity, we'll assume that all blocks have some sort of a *'base row'* of an arbitrary length and every cell in that row is a part of a column of an arbitrary length. Our block size is then the summation of all columns sizes.
 
@@ -259,14 +264,14 @@ And that clearly equals:
 <mathpart>
 First, recall our proof from before that:
 \\[
-    \sum\limits_{i=1}^N { iX^i } = X + 2X^2 + 3X^3 + 4X^4 + ... = \cdots = \frac{ NX^{N+2}-(N+1)X^{N+1}+X }{ (X-1)^2 } 
+    \sum\limits_{i=1}^N { iX^i } = X + 2X^2 + 3X^3 + 4X^4 + \cdots = \cdots = \frac{ NX^{N+2}-(N+1)X^{N+1}+X }{ (X-1)^2 } 
 \\]
 Then, in a similar way, let's look at:
 \\[
     \begin{align}
         \sum\limits_{i=1}^N{  i^2 X^i  } & = X + 4X^2 + 9X^3 + 16X^4 + ...  \\\\
-        & = X  \left[  1 + 4X + 9X^2 + 16X^3 + ...  \right]   \\\\
-        & = X  \left[  X + 2X^2 + 3X^3 + 4X^4 + ... \right]' \\\\
+        & = X  \left[  1 + 4X + 9X^2 + 16X^3 + \cdots  \right]   \\\\
+        & = X  \left[  X + 2X^2 + 3X^3 + 4X^4 + \cdots \right]' \\\\
         & = X  \left[  \frac{ NX^{N+2}-(N+1)X^{N+1}+X }{ (X-1)^2 }  \right]'  \\\\
         & = X  \left[  
             \frac{ (-2N^2-2N+1)X^{N+1} + N^2X^{N+2} + (N+1)^2X^N-X-1} { (X-1)^3 }
@@ -315,16 +320,16 @@ I'm using this exact expression to evaluate and represent the block size when th
 
 ## A Nice Observation on the Expression
 
-If we look on this expression in [Desmos](https://www.desmos.com/calculator/ra8wgehfnm) and play with the slider for *N* we can see that although the number of block expression depends on both *N* and *p*, when we increase *N*, the value for relatively large p's (\\( 0.5 \le p \le 1.0 \\)) doesn't change at all. 
+If we look on this expression in [Desmos](https://www.desmos.com/calculator/ra8wgehfnm) and play with the slider for *N* we can see that although the expression depends on both *N* and *p*, when we increase *N*, the value for relatively large p's (\\( 0.5 \le p \le 1.0 \\)) doesn't change at all. 
 
 This is a nice observation and we could have actually expected to get something like it. If *p* is large, the chances for a lot of adjacent separators to be missing and create a large block are negligible, so blocks tend to be small, and by that - not bounded by the grid size. The thing that limits the block size (for large p's) is the probability for a separator and not the hard limit of the grid itself. This of course wont hold for a grid of 3x3 but we don't look on those cases anyway..
 
 
 # Performance of the Grid Expression
 
-Here, I've plotted the actual average block size (on 20 iterations) and the estimated one for all p's and several N's. We could already expect that the estimated bock size won't change much between N's but here we can see that the actual block size also stays pretty constant (by *p*). 
+Here, I plotted the actual average block size (on 20 iterations) and the estimated one for all p's and several N's. From the previous section, we could already expect that the estimated block size won't change much between N's but here we can see that the actual block size also stays pretty constant.
 
-As we've said before, the second assumption we've made (about the block's shape) doesn't hold in reality. We can clearly see it now with the much higher error than in the cyclic assumption we've tested before. We can also notice that the error is not random over *p*. We should therefore suspect that this is an error due to bias in the model and not variance. That makes sense. We've limited our model to make it simpler. The price to pay now is that the estimation isn't accurate, but again - we're not trying to get to a 100% mathematical proof but to solve a problem we had, and for that - I believe this expression is enough.
+As we've said before, the second assumption we've made (about the block's shape) doesn't hold in reality. We can clearly see it now with the much higher error than in the cyclic assumption we've tested before. It's also clear that the error is not random over *p*. We should therefore suspect that this is an error due to bias in the model and not variance. That makes sense. We've limited our model to make it simpler. The price to pay now is that the estimation isn't accurate, but again - we're not trying to get to a 100% mathematical proof but to solve a problem we had, and for that - I believe this expression is enough.
 
 ![Actual vs. Estimated Grid Block Size](/assets/article_images/random-polygons/actual-vs-estimated-grid-block-size.png)
 
