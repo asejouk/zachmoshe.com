@@ -39,6 +39,21 @@
         }
       }
     });
+
+    // take care of the more-posts-button
+    var morePostsButton = $("#morePostsPlusButton")
+    var morePosts = $("#morePostsPanel")
+    var morePostsCloseButton = $("#morePostsCloseButton")
+
+    morePostsButton.on('click', function() { 
+      morePostsButton.toggle(0)
+      morePosts.slideToggle();
+    });
+    morePostsCloseButton.on('click', function() {
+      morePosts.toggle(0);
+    morePostsButton.toggle(0);
+    })
+
   });
 }(jQuery));
 </script>
@@ -48,3 +63,19 @@
   <script src="/assets/js/jquery.bxslider.min.js"></script>
 {% endif %}
 
+
+<script>
+$(document).ready(function(){
+  $("#morePostsPlusButton").on('click', function(){
+    ga('send', 'event', 'MorePosts', 'plus-button-clicked');
+  });
+  $("#morePostsCloseButton").on('click', function(){
+    ga('send', 'event', 'MorePosts', 'close-button-clicked');
+  });
+  $("#morePostsPanel a").on('click', function() { 
+    ga('send', 'event', 'MorePosts', 'link-clicked', $(this).attr('href'));
+  });
+
+});
+
+</script>

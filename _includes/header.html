@@ -1,5 +1,34 @@
 <!-- header start -->
+<a href="/" class="logo-readium">
+	<img src="/assets/images/zm_logo.jpg" width="48px" height="48px">
+	
+</a>
 
-<a href="/{{ site.base_url }}" class="logo-readium"><span class="logo" style="background-image: url({{ site.corner_logo }})"></span></a>
-
+<div id="morePostsPlusButton" class="more-posts-button more-posts-plus-button">
+	<span class="fa-plus-circle"></span>
+</div>
+<div id="morePostsPanel" class="more-posts">
+	<div id="morePostsCloseButton" class="more-posts-button more-posts-close-button">
+		<span class="fa-times-circle"></span>
+	</div>
+	<ul>
+		{% assign ctr = 0 %}
+		{% for curr_post in site.posts order:time %}
+			{% if curr_post.title != page.title %}
+				<li>
+					<img class="post-mini-image" src="{{curr_post.mini_image}}" />
+					<div class="post-title"><a href="{{curr_post.url}}">{{ curr_post.title }}</a></div>
+					<div class="post-description">{{ curr_post.description }}</div>
+				</li>
+				{% assign ctr = ctr | plus: 1 %}
+				{% if ctr == 3 %}
+					{% break %}
+				{% endif %}
+			{% endif %}
+		{% endfor %}
+			<li>
+				<div class="post-title" style="text-align: center"><a href="/">More posts from zachmoshe.com</a></div>
+			</li>
+	</ul>
+</div>
 <!-- header end -->
