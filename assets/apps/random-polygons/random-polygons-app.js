@@ -1,67 +1,5 @@
 'use strict';
 
-var BOUNDARY_VERTICAL = "V";
-var BOUNDARY_HORIZONTAL = "H";
-
-var Boundary = function(type, row, col) { 
-	if (type !== BOUNDARY_HORIZONTAL && type !== BOUNDARY_VERTICAL) { 
-		throw "Illegal type " + type + " four Boundary";
-	}
-	this.type = type;
-	this.row = row;
-	this.col = col;
-};
-
-
-var Grid = function(n) { 
-
-	var initialize_boundaries = function(N) { 
-		// initialize all boundaries
-		var boundaries = {};
-		boundaries[BOUNDARY_VERTICAL] = {};
-		boundaries[BOUNDARY_HORIZONTAL] = {};
-		// vertical ones
-		for (var row=0 ; row<N ; row++) { 
-			boundaries[BOUNDARY_VERTICAL][row] = {};
-
-			for (var col=0 ; col<N-1 ; col++) {
-				boundaries[BOUNDARY_VERTICAL][row][col] = 1;
-			}
-		}
-		// horizontal ones
-		for (var row=0 ; row<N-1 ; row++) { 
-			boundaries[BOUNDARY_HORIZONTAL][row] = {};
-
-			for (var col=0 ; col<N ; col++) { 
-				boundaries[BOUNDARY_HORIZONTAL][row][col] = 1;
-			}
-		}
-		return boundaries;
-	}
-
-	// setup the object properties
-	this.N = n;
-	this.boundaries = initialize_boundaries(this.N);
-
-	// some methods
-	this.apply_boundary_pct = function(pct) { 
-		for (var row=0 ; row<this.N ; row++) { 
-			for (var col=0 ; col<this.N-1 ; col++) {
-				this.boundaries[BOUNDARY_VERTICAL][row][col] = (Math.random()<pct) ? 1 : 0;
-			}
-		}
-		// horizontal ones
-		for (var row=0 ; row<this.N-1 ; row++) { 
-			for (var col=0 ; col<this.N ; col++) { 
-				this.boundaries[BOUNDARY_HORIZONTAL][row][col] = (Math.random()<pct) ? 1 : 0
-			}
-		}
-
-	}
-
-
-};
-
 
 /**
  * @ngdoc overview
@@ -74,6 +12,7 @@ var Grid = function(n) {
 var app = angular.module('randomPolygonsApp', []);
 
 app	.controller('polygonsCtrl', ['$scope', function($scope) { 
+	$scope.gridSizes = [10,25,50,75];
 	$scope.grid_size = 50;
 	$scope.grid_pct = 0.75;
 
@@ -129,55 +68,95 @@ app.directive('polygonsCanvas', function () {
         var canvas = $element[0]
         var context = canvas.getContext('2d');
 
-        $scope.reset = function(n, pct) { 
-          this.N = n;
-          this.grid = new Grid(n);
-          this.grid.apply_boundary_pct(pct);
 
+        $scope.reset = function(n,pct) { 
+		this.N = n;
+		$scope.grid = new Grid(n);
+		$scope.grid.apply_boundary_pct(pct);
 
-          var width = canvas.width;
-          var height = canvas.height;
-          var cellHeight = height / this.grid.N;
-          var cellWidth = width / this.grid.N;
+		$scope.drawGrid();
+        }
 
+        $scope.drawGrid = function() { 
+        	var grid = $scope.grid;
 
-          // clear canvas
-          context.clearRect(0,0, width, height);
+		$scope.width = canvas.width;
+		$scope.height = canvas.height;
+		$scope.cellHeight = $scope.height / grid.N;
+		$scope.cellWidth = $scope.width / grid.N;
 
-          // draw the border
-          context.beginPath();
-          context.lineWidth=2;
-          context.rect(0,0,width, height);
-          context.stroke();
-
-
-          // draw all boundaries
-          context.lineWidth = 1;
-          for (var row in Object.keys(this.grid.boundaries["V"])) { 
-            for (var col in Object.keys(this.grid.boundaries["V"][row])) { 
-              row = parseInt(row)
-              col = parseInt(col)
-              
-              context.beginPath();
-              context.strokeStyle = (this.grid.boundaries["V"][row][col] === 1)  ? "black" : "white";
-              context.moveTo(cellWidth*(col+1), cellHeight*row);
-              context.lineTo(cellWidth*(col+1), cellHeight*(row+1));
-              context.stroke();
-            }
-          }
-          for (var row in Object.keys(this.grid.boundaries["H"])) { 
-            for (var col in Object.keys(this.grid.boundaries["H"][row])) { 
-              row = parseInt(row);
-              col = parseInt(col);
-              
-              context.beginPath();
-              context.strokeStyle = (this.grid.boundaries["H"][row][col] === 1)  ? "black" : "white";
-              context.moveTo(cellWidth*col, cellHeight*(row+1));
-              context.lineTo(cellWidth*(col+1), cellHeight*(row+1));
-              context.stroke();
-            }
-          }
+		clearBoard();
+		drawPolygons("black");
+		//drawBoundariesOld("#BBBBBB")
         };
+
+        function clearBoard(width, height) { 
+		// clear canvas
+		context.clearRect(0,0, $scope.width, $scope.height);
+
+		// draw the border
+		context.beginPath();
+		context.lineWidth=2;
+		context.strokeStyle = "black";
+		context.rect(0,0, $scope.width, $scope.height);
+		context.stroke();
+        }
+
+        function drawPolygons(color) { 
+        	var grid = $scope.grid;
+
+        	context.lineWidth = 1;
+    		context.strokeStyle = color;
+
+		var paths = grid.getAllPaths();
+		for (var cellValue in paths) { 
+        		var path = paths[cellValue];
+
+        		context.beginPath();
+        		for (var i=0 ; i<path.length; i++) {
+        			var p = path[i];
+        			context.lineTo($scope.cellWidth*(p.col+1), $scope.cellHeight*(p.row+1));
+        		}
+        		context.fillStyle = color;
+        		context.fill();
+        		context.stroke();
+        	}
+        }
+
+	function drawBoundariesOld(color) { 
+		var grid = $scope.grid;
+
+		// draw all boundaries
+		context.lineWidth = 1;
+		for (var row=0 ; row<grid.N ; row++) { 
+			for (var col=0 ; col<grid.N ; col++) { 
+				row = parseInt(row)
+				col = parseInt(col)
+
+				if (grid.boundaries["V"][row][col] === 1) { 
+					context.beginPath();
+					context.strokeStyle = color;
+					context.moveTo($scope.cellWidth*(col+1), $scope.cellHeight*row);
+					context.lineTo($scope.cellWidth*(col+1), $scope.cellHeight*(row+1));
+					context.stroke();
+				}
+			}
+		}
+		for (var row=0; row<grid.N ; row++) { 
+			for (var col=0 ; col<grid.N; col++) { 
+				row = parseInt(row);
+				col = parseInt(col);
+
+				if (grid.boundaries["H"][row][col] === 1)  {
+					context.beginPath();
+					context.strokeStyle = color;
+					context.moveTo($scope.cellWidth*col, $scope.cellHeight*(row+1));
+					context.lineTo($scope.cellWidth*(col+1), $scope.cellHeight*(row+1));
+					context.stroke();
+				}
+			}
+		}
+        }
 
       }]
 

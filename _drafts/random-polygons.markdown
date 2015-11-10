@@ -36,11 +36,34 @@ I finally used \\( \left[   \frac{ (1-p)^N(Np-p+2) + p - 2 }{ p }   \right]^2 \\
 
 # Step 2: From Blocks to Polygons
 
-`TO BE DONE`
+Given a set of blocks, we want to draw a polygon in every block so every polygon preserves the shape of the block (that was randomly created) and doesn't get out of the block so we get the non-overlapping property for free. I could draw a squarish polygon inside every block, but that would be boring. Instead, I had the following pseudo-code in mind:
+
+{% highlight python %}
+for block in blocks: 
+    polygon = []
+
+    for separator in block.separators:    
+        point = separator.randomizePoint()
+        point.addPadding()
+
+        if (nonConvexTurn()):
+            polygon.push(cornerPoint)
+
+        polygon.push(point)
+
+    polygon.draw()
+{% endhighlight %}
+
+![Blocks to Polygons example](/assets/article_images/random-polygons/blocks-to-polygons-example.png)
+
+Notice that we must take care of the 'non-convex' turns. Otherwise, a line drawn straight between those two points will cross another cell and may overlap with the polygon that is there.
+
+I implemented something like this pseudo-code in Javascript. I officially hate this programming language now! I really don't see why they need to get to the 6th version of the language (ECMA6, not supported yet in most browsers) to add equality operator override and Array utilities, but whatever.. It's done now and you can see it below.
+
 
 # Example
 
-Below is an example for generating random polygons using the algorithm described. 
+Below is an example for generating random polygons using the algorithm described. You can play with *N* to change the grid size, *p* to change the separator's probability and get an estimation of the block size. Good luck!
 
 <iframe frameborder="0" width="800" height="600"  src="/assets/apps/random-polygons/random-polygons-main.html"></iframe>
 
