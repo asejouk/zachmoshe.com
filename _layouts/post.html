@@ -43,15 +43,17 @@
             Article Image
           </div>
           <div class="post-meta">
-            <h1 class="post-title {{page.title_color_scheme if page.title_color_scheme}}">{{ page.title }}</h1>
+            <h1 class="post-title {{page.title_color_scheme if page.title_color_scheme}}" itemprop="name headline">{{ page.title }}</h1>
           </div>
           <div class="post-meta-bottom">
             <div class="cf post-meta-text {{page.title_color_scheme if page.title_color_scheme}}">
-              <div class="author-image" style="background-image: url({{ site.author_image }})">Blog Logo</div>
+              <div class="author-image" style="background-image: url({{ site.author_image }})"></div>
               <h4 class="author-name" itemprop="author" itemscope itemtype="http://schema.org/Person">{{ site.author }}</h4>
               on
-              <time datetime="{{ page.date | date: "%F %R" }}">{{ page.date | date_to_string }}</time>
+              <time datetime="{{ page.date | date: "%F %R" }}" itemprop="datePublished">{{ page.date | date_to_string }}</time>
+
               <!-- , tagged on {{#foreach tags}}<span class="post-tag-{{slug}}">{{#if @first}}{{else}}, {{/if}}<a href="/tag/{{slug}}">{{name}}</a></span>{{/foreach}} -->
+              <meta itemprop="image" content="{{site.url}}/{{page.mini_image}}"/>
             </div>
             <!--div style="text-align:center">
               <a href="#topofpage" class="topofpage"><i class="fa fa-angle-down"></i></a>
@@ -61,12 +63,13 @@
         {% else %}
         <div class="noarticleimage">
           <div class="post-meta">
-            <h1 class="post-title">{{ page.title }}</h1>
+            <h1 class="post-title" itemprop="name headline">{{ page.title }}</h1>
             <div class="cf post-meta-text">
-              <div class="author-image" style="background-image: url({{ site.author_image }})">Blog Logo</div>
+              <div class="author-image" style="background-image: url({{ site.author_image }})"></div>
               <h4 class="author-name" itemprop="author" itemscope itemtype="http://schema.org/Person">{{ page.author }}</h4>
               on
-              <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date_to_string }}</time>
+              <time datetime="{{ page.date | date_to_xmlschema }}" itemprop="datePublished">{{ page.date | date_to_string }}</time>
+              <meta itemprop="image" content="{{site.url}}/{{page.mini_image}}"/>
             </div>
           </div>
         </div>
