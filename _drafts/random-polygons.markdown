@@ -1,6 +1,7 @@
 ---
 layout: post
 title: "Generating Random Polygons"
+title_color_scheme: dark
 mini_image: /assets/article_images/random-polygons/mini_header.jpg
 image: /assets/article_images/random-polygons/header.jpg
 tags: polygons random-grid probability connected-components 

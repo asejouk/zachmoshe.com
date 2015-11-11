@@ -56,8 +56,8 @@ app.directive('polygonsCanvas', function () {
 
       link: function postLink($scope, $element, $attrs) {
         // setup
-        $element.attr('height', '1000');
-        $element.attr('width', '1000');
+        $element.attr('height', '10000');
+        $element.attr('width', '10000');
 
         // generate the first grid
         $scope.reset($scope.grid_size, $scope.grid_pct);
