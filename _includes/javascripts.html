@@ -1,5 +1,5 @@
-<!-- Google CDN Hosted jQuery  -->
 <script src="/assets/js/jquery-2.0.2.min.js"></script>
+
 
 <script type="text/javascript" src="{{ "/assets/js/jquery.fitvids.js" | prepend: site.baseurl  }}"></script>
 <script type="text/javascript" src="{{ "/assets/js/index.js" | prepend: site.baseurl  }}"></script>
@@ -61,6 +61,13 @@
 {% if page.sliders %}
   <!-- bxSlider Library  -->
   <script src="/assets/js/jquery.bxslider.min.js"></script>
+  <script>
+  $(document).ready(function(){
+    $('.bxslider').bxSlider({
+      mode: 'fade'
+    });
+  });
+  </script>
 {% endif %}
 
 
