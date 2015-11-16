@@ -4,6 +4,7 @@ title: "Generating Random Polygons"
 title_color_scheme: dark
 mini_image: /assets/article_images/random-polygons/mini_header.jpg
 image: /assets/article_images/random-polygons/header.jpg
+share_image: /assets/article_images/random-polygons/share_image.jpg
 tags: polygons random-grid probability connected-components 
 description: > 
     How to generate many non-overlapping random polygons on a plane? While doing so, we'll also look on random-grids (i.e. grids in which every boundary between two cells is probabilistic) and estimate the average block size by the size of the grid and the probability.
