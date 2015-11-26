@@ -18,7 +18,7 @@ machines. It's fixed now. A <code>launch.rb</code> script was added to the repo 
 
 <separator></separator>
 
-For the purpose of this post, we'll use the `geokit` gem that gives us the distance between two geo locations (long+lat). We'll run a Hadoop MR Streaming job to find for each country in the world, the city that is the closest to its geographical center (calculated from the max/min long/lat). This is obviously a stupid project that can run on my old cellphone's CPU, but it'll do the trick for this post. If you want to follow the steps, clone the [Github repo](https://github.com/zachmoshe/zachmoshe.com-use-ruby-gems-with-hadoop-streaming):  
+For the purpose of this post, we'll use the `geokit` gem that gives us the distance between two geo locations (long+lat). We'll run a Hadoop MR Streaming job to find for each country in the world, the city that is the closest to its geographical center (calculated from the max/min long/lat). This is obviously a stupid project that can run on my old cellphone's CPU, but it'll do the trick for this post. If you want to follow the steps, clone the [Github repo](https://github.com/zachmoshe/zachmoshe.com-use-ruby-gems-with-hadoop-streaming).
 
 _Notice you'll need ruby 2.1 or higher to run this project_
 {% highlight console %}
