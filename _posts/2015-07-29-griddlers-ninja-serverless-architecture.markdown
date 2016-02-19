@@ -38,7 +38,7 @@ Moving to a serverless architecture
 
 I don't take it personally, but let's just say that traffic to the site doesn't justify a 24x7 running server. My old Casio calculator can handle it and it'll still be idle 50% of the time... While Rails generates HTML pages and handles regular traffic, the Python workers barely work at all (only when someone submits a new board). Since they are all served together by the same <a href="http://aws.amazon.com/ec2/instance-types/#burst">Burstable Performance instance</a>, whenever a job comes in and the worker wakes up, it consumes all CPU credits pretty quickly and it may take hours to finish, by this time Rails is having troubles rendering pages as it doesn't get enough CPU. In order to get rid of my EC2 machine, I had to move the frontend and the processing somewhere else.
 
-![Griddlers ninja old architecture](/assets/article_images/griddlers-ninja-serverless/new-arch.png)
+![Griddlers ninja new architecture](/assets/article_images/griddlers-ninja-serverless/new-arch.png)
 
 All code is in a <a href="https://github.com/zachmoshe/griddlers">GitHub</a> repository.
 
