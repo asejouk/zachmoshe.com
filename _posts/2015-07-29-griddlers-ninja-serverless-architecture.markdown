@@ -3,8 +3,8 @@ layout: post
 title: "The Griddlers Ninja new serverless AWS architecture"
 mini_image: /assets/article_images/griddlers-ninja-serverless/mini_header.jpg
 image: /assets/article_images/griddlers-ninja-serverless/header.jpg
-tags: elections data clustering 
-description: > 
+tags: elections data clustering
+description: >
   How to design and build a serverless architecture website, using various AWS products to cut down costs and avoid monthly payments. The webapp is based on AngularJS for the frontend (backed by S3 to host it), SNS and SQS to manage messages and work queues, AWS Lambda to manage the spot instances (workers) and my original python code to actually solve the boards.
 
 ---
@@ -25,7 +25,7 @@ Griddles Ninja old architecture
 
 Pretty straight forward. I had the <code>t1.micro</code> machine so I used it to host a Ruby-On-Rails application that submitted jobs to Sidekiq for processing (solving boards) and also rendered HTMLs and persisted everything into a small MySQL instance.
 
-As for costs (outside of free-tier): 
+As for costs (outside of free-tier):
 
 - <a href="http://aws.amazon.com/ec2/pricing/">EC2</a> - $0.014/Hour => $10.08/Month (for a <code>t2.micro</code> instance. they've upgraded since...)
 - <a href="http://aws.amazon.com/rds/pricing/">RDS</a> - $0.017/Hour => $12.24/Month
@@ -46,22 +46,22 @@ All code is in a <a href="https://github.com/zachmoshe/griddlers">GitHub</a> rep
 
 That's easy. It shouldn't be served by Rails at all. I only put it there temporarily because it was a simple GUI and I suck at frontend technologies. I did, however, add AngularJS to my backlog. Months have passed, and I have finally found some time to see what is this marvelous piece of work everyone says that Google has put together. I won't say I'm an Angular expert now, I've probably only touched the basics, and I can't compare it to any of the other platforms simply because it's my first JavaScript project. What I can say is that I don't like JavaScript at all and that I had to use Google every 5 minutes just to find out that there is no library function for what I wanted to do and everyone on stackoverflow suggests that I add a method to Prototype for that. Ruby is much more fun!  
 
-Anyway, the whole frontend was moved to an AngularJS app which is stored and being served by S3 so it costs almost nothing. I didn't even bother to add <a href="http://aws.amazon.com/cloudfront/">CloudFront</a> to the mix because I trust you to keep the momentum by _not_ generating a lot of traffic.. 
+Anyway, the whole frontend was moved to an AngularJS app which is stored and being served by S3 so it costs almost nothing. I didn't even bother to add <a href="http://aws.amazon.com/cloudfront/">CloudFront</a> to the mix because I trust you to keep the momentum by _not_ generating a lot of traffic..
 
 ### Getting rid of the backend (RoR)
 
 Except for serving pages, the backend also handled all persistancy to the DB, and submitting the jobs. Not a very complex API.  
-It supports: 
+It supports:
 
 - Listing top solved boards (doesn't even matter if these are the last-submitted or just random)
-- Fetching results for an already solved board 
+- Fetching results for an already solved board
 - Submitting a new one
 
 Since none of the data storage solutions is a pay-as-you-go only solution, I decided to use S3 as a key-value store for my requests and responses data. My luck here was that the API is really simple and I didn't need any querying abilities. I also set a lifecycle policy on that bucket to automatically delete objects after a month, so I won't accumulate any costs over time.
 
 Triggering the workers is a different story, here I must have a queue that enforces single subscriber per message and is always up. <a href="http://aws.amazon.com/sqs/">SQS</a> and <a href="http://aws.amazon.com/sns/">SNS</a> provide just that and don't have any fixed fees. Messages can now pile up in the queue, but something needs to launch a worker to handle them. As you can guess, I'm not going to have a dedicated server for that, and actually - I want to get a decent server for the calculation phase while keeping my fees to the minimum.
 
-By launching <a href="http://aws.amazon.com/ec2/purchasing-options/spot-instances/">EC2 Spot Instances</a> I could bid $0.03/Hour and get a <code>m4.large</code> machine (2 CPUs, 8GB) which is a huge improvement from the 5 minutes of CPU I was getting from the <code>t1.micro</code> machine before my credit ran out.. 
+By launching <a href="http://aws.amazon.com/ec2/purchasing-options/spot-instances/">EC2 Spot Instances</a> I could bid $0.03/Hour and get a <code>m4.large</code> machine (2 CPUs, 8GB) which is a huge improvement from the 5 minutes of CPU I was getting from the <code>t1.micro</code> machine before my credit ran out..
 
 The SNS topic is the main hub here. There are two components that subscribe on that topic and get invoked when a new board is sent:
 
@@ -83,7 +83,7 @@ For queuing the SQS queue, I used Ruby just because I already have the code that
 def poll
   # visibility_timeout = 4 hours, idle_timeout = 10 minutes
   poller.poll(visibility_timeout: 4*60*60, idle_timeout: 10*60) do |msg|
-    begin 
+    begin
       logger.info "waiting for message..."
       handle_message msg
 
@@ -118,7 +118,7 @@ def handle_message(msg)
   core_path = "#{File.dirname(__FILE__)}/../core"
   begin
     status = Open4::popen4("#{core_path}/env/bin/python #{core_path}/bin/board_solver.py") do |pid, stdin, stdout, stderr|
-      
+
       stdin.puts(strategy)
       stdin.puts(request_params)
       stdin.puts(board)
@@ -164,14 +164,14 @@ exports.handler = function(event, context) {
   console.log('Got the following work:', JSON.stringify(message));
 
   // set user-data command for the worker (run the init script that is already on the image and shutdown when the polling service finishes)
-  userDataCommands = [ 
+  userDataCommands = [
     "#!/bin/bash",
     "sudo su - app -c /etc/griddlers/app_init_script.sh",
     "sudo shutdown -h now"
   ];
 
   // look for spot requests that are open/active and with the same app's tag
-  descSpotInstanceParams = { 
+  descSpotInstanceParams = {
     Filters: [
       { Name: 'state', Values: [ 'open', 'active' ] },
       { Name: 'tag:app', Values: [ appName ] }
@@ -183,7 +183,7 @@ exports.handler = function(event, context) {
     SpotPrice: '0.03',
     InstanceCount: 1,
     Type: 'one-time',
-    LaunchSpecification: { 
+    LaunchSpecification: {
       ImageId: 'ami-XXXXXXX',
       InstanceType: 'm4.large',
       IamInstanceProfile: {
@@ -202,37 +202,37 @@ exports.handler = function(event, context) {
 
   // first check how many spot requests do we have at the moment
   ec2.describeSpotInstanceRequestsAsync(descSpotInstanceParams)
-  .then(function(data) { 
-    var spotInstanceRequestIds = data.SpotInstanceRequests.map(function(spr) { 
+  .then(function(data) {
+    var spotInstanceRequestIds = data.SpotInstanceRequests.map(function(spr) {
       return spr.SpotInstanceRequestId;
     });
     console.log("Got " + spotInstanceRequestIds.length +  " spot instance request running: " + JSON.stringify(spotInstanceRequestIds));
-    
-    if ((data.SpotInstanceRequests.length === 0) || (data.SpotInstanceRequests.length === 1 && message.was_terminated === true)) { 
+
+    if ((data.SpotInstanceRequests.length === 0) || (data.SpotInstanceRequests.length === 1 && message.was_terminated === true)) {
       console.log("Requesting a new spot instance...");
       return ec2.requestSpotInstancesAsync(requestSpotInstancesParams);
-    } else { 
+    } else {
       console.log("There are already spot instance running for application " + appName + " : " + JSON.stringify(spotInstanceRequestIds));
       context.succeed();
       throw "OK";
     }
   })
   // avoid a race-condition if the spot request isn't created yet but we try to set tags on it (happened to me...)
-  .then(function(data) { 
+  .then(function(data) {
     console.log("sleeping for 1 second to avoid race-condition with the creation of the spot instance request...");
     return Promise.delay(1000).then(function() { return data });
   })
   // tag the spot request as our app
-  .then(function(data) { 
+  .then(function(data) {
     console.log("Spot instances requested - " + data.SpotInstanceRequests[0].SpotInstanceRequestId);
     return ec2.createTagsAsync( { Resources: [ data.SpotInstanceRequests[0].SpotInstanceRequestId ], Tags: [ { Key: 'app', Value: appName } ] } );
   })
   // that's it - done!
-  .then(function(data) { 
+  .then(function(data) {
     console.log("Tag app:" + appName + " attached");
     context.succeed();
   })
-  .catch(function(err) { 
+  .catch(function(err) {
     // "OK" is thrown to break the then() chain in case that there are already enough running sprs
     if (err === "OK") {
       context.succeed();
@@ -248,7 +248,7 @@ exports.handler = function(event, context) {
 
 I'll calculate based on 10K hits per month and 500 job requests. Ye.. I'm laughing as well...
 
-- S3 
+- S3
   - Hosting and serving the AngularJS app (~3MB)
       - Storage: ~$0.0
       - Requests: $0.08 (I assumed 20 GETs per client)
@@ -276,6 +276,4 @@ Pat on the back. A huge improvement! And don't forget that assumes 10K visitors/
 Future tasks
 ==========
 
-Currently, as this is a personal project, I didn't create a  <a href="http://aws.amazon.com/cloudformation/">CloudFormation</a> template for this stack but as a best practice I can highly recommend that. When I do that, I'll have to change some of the scripts to be easier to manipulate by an automated deployment process. 
-
-
+Currently, as this is a personal project, I didn't create a  <a href="http://aws.amazon.com/cloudformation/">CloudFormation</a> template for this stack but as a best practice I can highly recommend that. When I do that, I'll have to change some of the scripts to be easier to manipulate by an automated deployment process.
