@@ -6,7 +6,7 @@ mini_image: /assets/article_images/israel-elections-part-1/mini_header.jpg
 image: /assets/article_images/israel-elections-part-1/header.jpg
 tags: elections data clustering 
 description: > 
-  The "state of TLV" is a known phrase in Israel, representing the fact that TLV votes differently than the rest of the country. Does it actually exist? Can we actually cluster the country's ballots and form geographically close clusters that vote similarly but different from each other?
+  Trying to look at Israel's latest elections results and form homogeneous clusters of ballots. Will we get the "state of TLV" in the data as well?
 sliders:
   longlat:
   - image: /assets/article_images/israel-elections-part-1/slide-longlat/plot-0.png

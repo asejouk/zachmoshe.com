@@ -13,9 +13,12 @@ This time, I had to use some gems, and my code was a bit larger, so I got into s
 
 _Thanks go to Ido Hadanny who [did the same for Python](https://ihadanny.wordpress.com/2014/12/01/python-virtualenv-with-pig-streaming/) and therefore can be considered as the 'spiritual father' of this post._
 
-<separator/>
+__UPDATE 23/11/15__: _Thanks to [jaycclee](https://disqus.com/by/jaycclee/) for letting me know that my scripts don't run well on the new <code>EMR-4.2.0</code>
+machines. It's fixed now. A <code>launch.rb</code> script was added to the repo to start an EMR cluster and send the example job._
 
-For the purpose of this post, we'll use the `geokit` gem that gives us the distance between two geo locations (long+lat). We'll run a Hadoop MR Streaming job to find for each country in the world, the city that is the closest to its geographical center (calculated from the max/min long/lat). This is obviously a stupid project that can run on my old cellphone's CPU, but it'll do the trick for this post. If you want to follow the steps, clone the [Github repo](https://github.com/zachmoshe/zachmoshe.com-use-ruby-gems-with-hadoop-streaming):  
+<separator></separator>
+
+For the purpose of this post, we'll use the `geokit` gem that gives us the distance between two geo locations (long+lat). We'll run a Hadoop MR Streaming job to find for each country in the world, the city that is the closest to its geographical center (calculated from the max/min long/lat). This is obviously a stupid project that can run on my old cellphone's CPU, but it'll do the trick for this post. If you want to follow the steps, clone the [Github repo](https://github.com/zachmoshe/zachmoshe.com-use-ruby-gems-with-hadoop-streaming).
 
 _Notice you'll need ruby 2.1 or higher to run this project_
 {% highlight console %}
@@ -86,17 +89,19 @@ It's pretty straight-forward, I've used [EMR's bootstrap actions](http://docs.aw
 #! /bin/bash
 
 # first, install git and clone rbenv and rbenv-build
-sudo yum install git -y
+sudo yum install git readline-devel -y
 git clone https://github.com/sstephenson/rbenv.git ~/.rbenv
+git clone https://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build
+
+echo '' >> ~/.bash_profile
 echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bash_profile
 echo 'eval "$(rbenv init -)"' >> ~/.bash_profile
-git clone https://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build
 
 source ~/.bash_profile
 
 # install ruby and bundler
-rbenv install 2.1.4
-rbenv global 2.1.4
+rbenv install 2.2.3
+rbenv global 2.2.3
 
 gem install bundler
 {% endhighlight %}
@@ -108,6 +113,8 @@ Yes, I know.. It is kind of bundling the cluster to the jobs (two different jobs
 [Bundler](http://bundler.io/) is a great tool for dependency management in the ruby eco-system. It's used by rails so most developers are familiar with its concepts even without knowing (the `Gemfile` file for example). If you're not familiar with Bundler I'd recommend having a look at their [website](http://bundler.io/#getting-started).
 
 Jobs are required to declare their dependencies in the `Gemfile` file. Then, we can use `Bundler` to package the whole job, including it's dependencies and deploy that to the hadoop machines.  `bundle install` takes care of resolving all dependencies and installs the missing ones and the '--deployment' flag causes it to install all packages into the `./vendor/bundle` directory and not to the global directories. It also adds a `./.bundle` directory with a configuration file so `bundle exec` will use the locally stored gems when running (on the cluster machines). We'll use this feature to make sure all our dependencies are packaged together with our job when we submit it to the cluster.
+
+Make sure to use the same ruby version on your dev machine as you use in production when packaging gems into 'vendor/bundle'. 
 
 Install all dependencies locally:
 {% highlight console %}
@@ -136,6 +143,12 @@ For some reason, we can't use a mapper from inside an archive. I'm not sure abou
 
 {% highlight bash %}
 #! /bin/bash
+
+# For some reason the HOME env variable is set to '/home/' (while user is 'hadoop')
+# It also seems that something has changed since past versions and .bash_profile isn't run
+HOME=/home/$USER
+. $HOME/.bash_profile
+
 APP_NAME=$1
 EXEC=$2
 shift 2
@@ -147,36 +160,59 @@ bundle exec ./$EXEC $PARAMS
 
 To work with EMR itself, I'll use the [AWS Ruby API](http://docs.aws.amazon.com/sdkforruby/api/Aws/EMR/Client.html), you're free to use any other API/CLI you prefer, they all basically look the same. 
 
-First, let's upload the relevant files to S3 (replace _zachmoshe.com-ruby-emr_ with your own bucket):
+First, let's upload the relevant files to S3:
 {% highlight console %}
-$ aws s3 cp bootstrap.sh s3://zachmoshe.com-ruby-emr/
-$ aws s3 cp bundler_run.sh s3://zachmoshe.com-ruby-emr/
-$ aws s3 cp mr-job.tar.gz s3://zachmoshe.com-ruby-emr/
-$ aws s3 cp input.txt s3://zachmoshe.com-ruby-emr/input/
+$ aws s3 cp bootstrap.sh s3://<YOUR BUCKET>/
+$ aws s3 cp bundler_run.sh s3://<YOUR BUCKET>/
+$ aws s3 cp mr-job.tar.gz s3://<YOUR BUCKET>/
+$ aws s3 cp input.txt s3://<YOUR BUCKET>/
 {% endhighlight %}
 
- Then, create a cluster:
+ Then, create a cluster (for your convenience, the following also available as a [script](https://github.com/zachmoshe/zachmoshe.com-use-ruby-gems-with-hadoop-streaming/blob/master/launch.rb) in the GitHub repo):
+
+ __Notice:__ _The IAM roles (<code>EMR_DefaultRole</code> and <code>EMR_EC2_DefaultRole</code>) can be created automatically with `aws emr create-default-roles` from commandline, or manually by you for more control on permissions._
+
 
 {% highlight ruby %}
 require 'aws-sdk-core'
+
+...SET VARIABLES...
+
 Aws.config[:region] = 'eu-west-1'
+Aws.config[:credentials] = ...
 
 emr = Aws::EMR::Client.new 
+
 res = emr.run_job_flow( 
-	name: 'my-test-cluster',
-	ami_version: '3.3.2',
-	instances: { 
-		keep_job_flow_alive_when_no_steps: true,
-		instance_count: 2, 
-		master_instance_type: 'm3.xlarge', 
-		slave_instance_type: 'm3.xlarge',
-	},
-	bootstrap_actions: [ 
-		{ 
-			name: 'Installing Ruby', 
-			script_bootstrap_action: { path: 's3://zachmoshe.com-ruby-emr/bootstrap.sh', args: [] },
-		} 
-	],
+    name: 'my-test-cluster',
+    service_role: 'EMR_DefaultRole',
+    job_flow_role: 'EMR_EC2_DefaultRole',
+    release_label: 'emr-4.2.0', 
+    log_uri: LOG_URI,
+
+    instances: { 
+        keep_job_flow_alive_when_no_steps: true,
+        instance_count: 1, 
+        master_instance_type: 'm3.xlarge', 
+        slave_instance_type: 'm3.xlarge',
+        ec2_key_name: EC2_KEY_NAME,
+    },
+    bootstrap_actions: [ 
+        { 
+            name: 'Installing Ruby', 
+            script_bootstrap_action: { path: "s3://#{S3_BUCKET}/bootstrap.sh", args: [] },
+        } 
+    ],
+    steps: [
+    	{
+    		name: 'Setup Hadoop Debugging',
+    		action_on_failure: 'TERMINATE_CLUSTER',
+    		hadoop_jar_step: {
+    			jar: 'command-runner.jar',
+    			args: [ "state-pusher-script" ]
+    		},
+    	}
+    ],
 )
 cluster_id = res.job_flow_id
 {% endhighlight %}
@@ -185,24 +221,24 @@ And finally, submit the job:
 
 {% highlight ruby %}
 emr.add_job_flow_steps(
-	job_flow_id: res.job_flow_id, 
-	steps: [
-		{
-			name: 'Running mr-job', 
-			action_on_failure: 'CONTINUE', 
-			hadoop_jar_step: {
-				jar: '/home/hadoop/contrib/streaming/hadoop-streaming.jar', 
-				args:[
-					"-files", "s3://zachmoshe.com-ruby-emr/bundler_run.sh", 
-					"-archives", "s3://zachmoshe.com-ruby-emr/mr-job.tar.gz#app", 
-					"-mapper", "bundler_run.sh app ./mapper.rb",
-					"-reducer", "bundler_run.sh app ./reducer.rb",
-					"-input", "s3://zachmoshe.com-ruby-emr/input", 
-					"-output", "s3://zachmoshe.com-ruby-emr/output"
-				],
-			},
-		},
-	]
+    job_flow_id: cluster_id, 
+    steps: [
+        {
+            name: 'Running mr-job', 
+            action_on_failure: 'CONTINUE', 
+            hadoop_jar_step: {
+                jar: '/usr/lib/hadoop/hadoop-streaming.jar', 
+                args:[
+                    "-files", "s3://#{S3_BUCKET}/bundler_run.sh", 
+                    "-archives", "s3://#{S3_BUCKET}/mr-job.tar.gz#app", 
+                    "-mapper", "bash bundler_run.sh app ./mapper.rb",
+                    "-reducer", "bash bundler_run.sh app ./reducer.rb",
+                    "-input", "s3://#{S3_BUCKET}/input.txt", 
+                    "-output", "s3://#{S3_BUCKET}/output.txt"
+                ],
+            },
+        },
+    ]
 )
 {% endhighlight %}
 
